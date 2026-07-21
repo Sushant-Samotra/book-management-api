@@ -41,14 +41,27 @@ def create_access_token(user_id:str) ->str:
     
     return encoded_token
 
-# def decode_access_token(token:str)->str:
-#     try:
-#         payload = jwt.decode(
-#             token,
-#             JWT_SECRET_KEY,
-#             algorithm=[JWT_ALGORITHM],
-#             options={
-#                 "require": ['sub','exp']
-#             }
-#         )
-#     except jwt.ExpiredSignatureError
+def decode_access_token(token:str)->str:
+    try:
+        payload = jwt.decode(
+            token,
+            JWT_SECRET_KEY,
+            algorithm=[JWT_ALGORITHM],
+            options={
+                "require": ['sub','exp']
+            }
+        )
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Authentication Failed",
+            headers={
+                "WWW-Authentication": "Bearer"
+            }
+        )
+    subject = payload.get('sub')
+    try:
+        user_id = str(
+            UUID(subject)
+        )
+    except (ValueError,TypeError,Attribute)
