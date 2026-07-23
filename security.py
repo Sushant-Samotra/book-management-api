@@ -46,7 +46,7 @@ def decode_access_token(token:str)->str:
         payload = jwt.decode(
             token,
             JWT_SECRET_KEY,
-            algorithm=[JWT_ALGORITHM],
+            algorithms=[JWT_ALGORITHM],
             options={
                 "require": ['sub','exp']
             }
@@ -64,4 +64,12 @@ def decode_access_token(token:str)->str:
         user_id = str(
             UUID(subject)
         )
-    except (ValueError,TypeError,Attribute)
+    except (ValueError,TypeError,AttributeError):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid authencation credentials",
+            headers={
+                "WWW-Authenticate": "Bearer"
+            }
+        )
+    return user_id

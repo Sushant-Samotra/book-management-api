@@ -5,7 +5,8 @@ from models.user_models import (
     UserRegister,
     UserLogin,
     UserActionResponse,
-    TokenResponse
+    TokenResponse,
+    UserResponse
 )
 
 from security import (
@@ -13,11 +14,17 @@ from security import (
     verify_password,
     create_access_token
 )
+from dependencies import CurrentUser
 
 router = APIRouter(
     prefix = '/auth',
     tags = ['Auth']
 )
+
+@router.get('/me',response_model=UserResponse,status_code=status.HTTP_200_OK)
+def  get_my_profile(current_user:CurrentUser):
+    return current_user
+
 
 @router.post("/register",response_model=UserActionResponse,status_code = status.HTTP_201_CREATED)
 def register_user(user:UserRegister):
